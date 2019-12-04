@@ -101,8 +101,8 @@ int main(int argc, char *argv[])
        for(iY=0; iY<tbmpif.biWidth; iY++)
         {
             tcolortab[iX][iY].cB = tcolortab[iX][iY].cB - 150;
-            tcolortab[iX][iY].cB = tcolortab[iX][iY].cR - 150;
-            tcolortab[iX][iY].cB = tcolortab[iX][iY].cG - 150;
+            tcolortab[iX][iY].cR = tcolortab[iX][iY].cR - 150;
+            tcolortab[iX][iY].cG = tcolortab[iX][iY].cG - 150;
         }
     }
 
