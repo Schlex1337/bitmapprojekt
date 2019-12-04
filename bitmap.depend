@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1575015268 source:u:\eigene dateien\fächer\soft\2b\bitmap\bitmap\main.c
+	<stdio.h>
+	<stdlib.h>
+
