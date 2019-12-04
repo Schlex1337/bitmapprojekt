@@ -68,6 +68,12 @@ int main(int argc, char *argv[])
     FILE *fBmpdatei = fopen(argv[1],"rb"); //Datei öffnen
     FILE *fuellerneu = fopen("fuellerneu.bmp","wb"); // neue Datei erstellen
 
+    if(fBmpdatei == NULL)
+    {
+        printf("Keine Datei wurde geoeffnet.");
+        return 0;
+    }
+
     fread(&tbmpfh,sizeof(bmpheader),1,fBmpdatei); // Bitmapheader einlesen in die Struktur fBmpdatei
     fread(&tbmpif,sizeof(bmpinfo),1,fBmpdatei); // Bitmapinfoheader einlesen in die Struktur fBmpdatei
 
@@ -90,8 +96,17 @@ int main(int argc, char *argv[])
     fwrite(&tbmpfh,sizeof(bmpheader),1,fuellerneu); // Bitmapheader in die neue Datei reinschreiben
     fwrite(&tbmpif,sizeof(bmpinfo),1,fuellerneu); // Bitmapinfoheader in die neue Datei reinschreiben
 
+    for(iX=0; iX<tbmpif.biHeight; iX++) // Graustufe
+    {
+       for(iY=0; iY<tbmpif.biWidth; iY++)
+        {
+            tcolortab[iX][iY].cB = tcolortab[iX][iY].cB - 150;
+            tcolortab[iX][iY].cB = tcolortab[iX][iY].cR - 150;
+            tcolortab[iX][iY].cB = tcolortab[iX][iY].cG - 150;
+        }
+    }
 
-    for(iX=0 ; iX<tbmpif.biHeight; iX++)
+    for(iX=0; iX<tbmpif.biHeight; iX++) // Farbtabelle in die neue Datei reinschreiben
     {
        for(iY=0; iY<tbmpif.biWidth; iY++)
         {
@@ -106,6 +121,8 @@ int main(int argc, char *argv[])
             }
         }
     }
+
+
 
     printheader(&tbmpfh); //Bitmapheader auf der Konsole anzeigen lassen
     printf("\n");
