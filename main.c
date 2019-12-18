@@ -60,15 +60,15 @@ void printinfo(bmpinfo *tbmpif) // Bitmapinfoheader auf die Konsole ausprinten
 
 int main(int argc, char *argv[])
 {
-    int iX , iY, iL;
+    int iX , iY, iL, iP;
     bmpheader tbmpfh;
     bmpinfo tbmpif;
     bmpcolor **tcolortab;
 
-    FILE *fBmpdatei = fopen(argv[1],"rb"); //Datei öffnen
-    FILE *fuellerneu = fopen("fuellerneu.bmp","wb"); // neue Datei erstellen
+    FILE *fBmpdatei = fopen("naegel.bmp","rb");
+    FILE *neu = fopen("nneu.bmp","wb"); // neue Datei erstellen
 
-    if(fBmpdatei == NULL)
+    if(fBmpdatei == NULL) // Geöffnete Datei vorhanden?
     {
         printf("Keine Datei wurde geoeffnet.");
         return 0;
@@ -78,7 +78,6 @@ int main(int argc, char *argv[])
     fread(&tbmpif,sizeof(bmpinfo),1,fBmpdatei); // Bitmapinfoheader einlesen in die Struktur fBmpdatei
 
     tcolortab = (bmpcolor**)malloc(tbmpif.biHeight*sizeof(bmpcolor*)); // Speicher reservieren für die erste Dimension
-
     for(iL=0; iL<tbmpif.biHeight;iL++) // Speicher reservieren für die zweite Dimension
     {
         tcolortab[iL] = (bmpcolor*)malloc(tbmpif.biWidth*sizeof(bmpcolor));
@@ -93,16 +92,17 @@ int main(int argc, char *argv[])
         fseek(fBmpdatei,tbmpif.biWidth%4,SEEK_CUR);
     }
 
-    fwrite(&tbmpfh,sizeof(bmpheader),1,fuellerneu); // Bitmapheader in die neue Datei reinschreiben
-    fwrite(&tbmpif,sizeof(bmpinfo),1,fuellerneu); // Bitmapinfoheader in die neue Datei reinschreiben
+    fwrite(&tbmpfh,sizeof(bmpheader),1,neu); // Bitmapheader in die neue Datei reinschreiben
+    fwrite(&tbmpif,sizeof(bmpinfo),1,neu); // Bitmapinfoheader in die neue Datei reinschreiben
 
     for(iX=0; iX<tbmpif.biHeight; iX++) // Graustufe
     {
        for(iY=0; iY<tbmpif.biWidth; iY++)
         {
-            tcolortab[iX][iY].cB = tcolortab[iX][iY].cB - tcolortab[iX][iY].cB - 50;
-            tcolortab[iX][iY].cR = tcolortab[iX][iY].cR - tcolortab[iX][iY].cR - 50;
-            tcolortab[iX][iY].cG = tcolortab[iX][iY].cG - tcolortab[iX][iY].cG - 50;
+            iP = tcolortab[iX][iY].cR*0.299+tcolortab[iX][iY].cG*0.587+tcolortab[iX][iY].cB*0.114;
+            tcolortab[iX][iY].cB = iP;
+            tcolortab[iX][iY].cG = iP;
+            tcolortab[iX][iY].cR = iP;
         }
     }
 
@@ -110,26 +110,23 @@ int main(int argc, char *argv[])
     {
        for(iY=0; iY<tbmpif.biWidth; iY++)
         {
-            fwrite(&tcolortab[iX][iY],sizeof(bmpcolor),1,fuellerneu);
+            fwrite(&tcolortab[iX][iY],sizeof(bmpcolor),1,neu);
         }
 
         if(4-tbmpif.biWidth%4 != 0)
         {
             for(iL=0; iL<4-tbmpif.biWidth%4; iL++)
             {
-                fputc(0,fuellerneu);
+                fputc(0,neu);
             }
         }
     }
-
-
 
     printheader(&tbmpfh); //Bitmapheader auf der Konsole anzeigen lassen
     printf("\n");
     printinfo(&tbmpif); // Bitmapinfoheader auf der Konsole anzeigen lassen
 
-
-    fclose(fuellerneu); // Neue Datei schließen
-    fclose(argv[1]); // Alte Datei schließen
+    fclose(neu); // Neue Datei schließen
+    fclose(fBmpdatei); // Alte Datei schließen
     return 0;
 }

@@ -32,12 +32,9 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="fueller.bmp" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="naegel.bmp" />
-		<Unit filename="wuerfel.bmp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
