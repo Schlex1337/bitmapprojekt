@@ -60,29 +60,24 @@ void einlesen(FILE *fBmpdatei,bmpheader *bhead,bmpinfo *binfo)
 {
     fread(bhead,sizeof(bmpheader),1,fBmpdatei); // Bitmapheader einlesen in die Struktur fBmpdatei
     fread(binfo,sizeof(bmpinfo),1,fBmpdatei); // Bitmapinfoheader einlesen in die Struktur fBmpdatei
-
-
 }
-/*
-void speicher(bmpcolor **tcolortab,bmpinfo.biHeight,bmpinfo.biWidth)
+
+void auslesen(FILE *neu,bmpheader *bhead,bmpinfo *binfo)
 {
-    tcolortab = (bmpcolor**)malloc(binfo->biHeight*sizeof(bmpcolor*)); // Speicher reservieren für die erste Dimension
-    for(int iL=0; iL<binfo->biHeight;iL++) // Speicher reservieren für die zweite Dimension
-    {
-        tcolortab[iL] = (bmpcolor*)malloc(binfo->biWidth*sizeof(bmpcolor));
-    }
-}*/
+    fwrite(bhead,sizeof(bmpheader),1,neu); // Bitmapheader in die neue Datei reinschreiben
+    fwrite(binfo,sizeof(bmpinfo),1,neu); // Bitmapinfoheader in die neue Datei reinschreiben
+}
 
 
 int main(int argc, char *argv[])
 {
-    int iX , iY, iL, iP;
+    int iX , iY, iL, iP, iH;
     bmpheader bhead;
     bmpinfo binfo;
     bmpcolor **tcolortab;
 
     FILE *fBmpdatei = fopen("naegel.bmp","rb");
-    FILE *neu = fopen("naegelneu2.bmp","wb"); // neue Datei erstellen
+    FILE *neu = fopen("naegelneu3.bmp","wb"); // neue Datei erstellen
 
     if(fBmpdatei == NULL) // Geöffnete Datei vorhanden?
     {
@@ -90,15 +85,13 @@ int main(int argc, char *argv[])
         return 0;
     }
     einlesen(fBmpdatei,&bhead,&binfo);
-    /*
-    fread(&bhead,sizeof(bmpheader),1,fBmpdatei); // Bitmapheader einlesen in die Struktur fBmpdatei
-    fread(&binfo,sizeof(bmpinfo),1,fBmpdatei); // Bitmapinfoheader einlesen in die Struktur fBmpdatei
-    */
     tcolortab = (bmpcolor**)malloc(binfo.biHeight*sizeof(bmpcolor*)); // Speicher reservieren für die erste Dimension
     for(iL=0; iL<binfo.biHeight;iL++) // Speicher reservieren für die zweite Dimension
     {
         tcolortab[iL] = (bmpcolor*)malloc(binfo.biWidth*sizeof(bmpcolor));
     }
+
+
 
     for(iX=0 ; iX<binfo.biHeight; iX++) // Farbtabelle einlesen
     {
@@ -109,8 +102,7 @@ int main(int argc, char *argv[])
         fseek(fBmpdatei,binfo.biWidth%4,SEEK_CUR);
     }
 
-    fwrite(&bhead,sizeof(bmpheader),1,neu); // Bitmapheader in die neue Datei reinschreiben
-    fwrite(&binfo,sizeof(bmpinfo),1,neu); // Bitmapinfoheader in die neue Datei reinschreiben
+
 
     for(iX=0; iX<binfo.biHeight; iX++) // Graustufe
     {
@@ -122,6 +114,8 @@ int main(int argc, char *argv[])
             tcolortab[iX][iY].cR = iP;
         }
     }
+
+    auslesen(neu,&bhead,&binfo);
 
     for(iX=0; iX<binfo.biHeight; iX++) // Farbtabelle in die neue Datei reinschreiben
     {
@@ -138,6 +132,7 @@ int main(int argc, char *argv[])
             }
         }
     }
+
 
     printheader(&bhead); //Bitmapheader auf der Konsole anzeigen lassen
     printf("\n");
