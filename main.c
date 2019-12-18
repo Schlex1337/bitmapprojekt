@@ -33,16 +33,13 @@ typedef struct // Farbtabelle
     unsigned char cR;
 } bmpcolor;
 
-void printheader(bmpheader *bhead) // Bitmapheader auf die Konsole ausprinten
+void printheadinfo(bmpheader *bhead,bmpinfo *binfo) // Bitmapinfoheader auf die Konsole ausprinten
 {
     printf("Type: %d \n", bhead->bfType);
     printf("Size:%d \n", bhead->bfSize);
     printf("Reserved:%d \n", bhead->bfReserverd);
     printf("OffBits: %d \n", bhead->bfOffBits);
-}
-
-void printinfo(bmpinfo *binfo) // Bitmapinfoheader auf die Konsole ausprinten
-{
+    printf("\n");
     printf("Size: %d \n", binfo->biSize);
     printf("Width: %d \n", binfo->biWidth);
     printf("Height:%d \n", binfo->biHeight);
@@ -85,7 +82,9 @@ int main(int argc, char *argv[])
         return 0;
     }
     einlesen(fBmpdatei,&bhead,&binfo);
+
     tcolortab = (bmpcolor**)malloc(binfo.biHeight*sizeof(bmpcolor*)); // Speicher reservieren für die erste Dimension
+
     for(iL=0; iL<binfo.biHeight;iL++) // Speicher reservieren für die zweite Dimension
     {
         tcolortab[iL] = (bmpcolor*)malloc(binfo.biWidth*sizeof(bmpcolor));
@@ -134,9 +133,7 @@ int main(int argc, char *argv[])
     }
 
 
-    printheader(&bhead); //Bitmapheader auf der Konsole anzeigen lassen
-    printf("\n");
-    printinfo(&binfo); // Bitmapinfoheader auf der Konsole anzeigen lassen
+    printheadinfo(&bhead,&binfo); //Bitmapheader auf der Konsole anzeigen lassen
 
     fclose(neu); // Neue Datei schließen
     fclose(fBmpdatei); // Alte Datei schließen
