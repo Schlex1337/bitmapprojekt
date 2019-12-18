@@ -55,19 +55,23 @@ void printinfo(bmpinfo *binfo) // Bitmapinfoheader auf die Konsole ausprinten
     printf("Clr Used:%d \n", binfo->biClrUsed);
     printf("Clr IMPORTANT: %d \n", binfo->biClrImportant);
 }
-/*
-void speicher(bmpheader *bhead,bmpinfo *binfo, bmpcolor *tcolor)
-{
-    fread(&bhead,sizeof(bmpheader),1,fBmpdatei); // Bitmapheader einlesen in die Struktur fBmpdatei
-    fread(&binfo,sizeof(bmpinfo),1,fBmpdatei); // Bitmapinfoheader einlesen in die Struktur fBmpdatei
 
-    tcolortab = (bmpcolor**)malloc(binfo.biHeight*sizeof(bmpcolor*)); // Speicher reservieren für die erste Dimension
-    for(iL=0; iL<binfo.biHeight;iL++) // Speicher reservieren für die zweite Dimension
+void einlesen(FILE *fBmpdatei,bmpheader *bhead,bmpinfo *binfo)
+{
+    fread(bhead,sizeof(bmpheader),1,fBmpdatei); // Bitmapheader einlesen in die Struktur fBmpdatei
+    fread(binfo,sizeof(bmpinfo),1,fBmpdatei); // Bitmapinfoheader einlesen in die Struktur fBmpdatei
+
+
+}
+/*
+void speicher(bmpcolor **tcolortab,bmpinfo.biHeight,bmpinfo.biWidth)
+{
+    tcolortab = (bmpcolor**)malloc(binfo->biHeight*sizeof(bmpcolor*)); // Speicher reservieren für die erste Dimension
+    for(int iL=0; iL<binfo->biHeight;iL++) // Speicher reservieren für die zweite Dimension
     {
-        tcolortab[iL] = (bmpcolor*)malloc(binfo.biWidth*sizeof(bmpcolor));
+        tcolortab[iL] = (bmpcolor*)malloc(binfo->biWidth*sizeof(bmpcolor));
     }
 }*/
-
 
 
 int main(int argc, char *argv[])
@@ -78,18 +82,18 @@ int main(int argc, char *argv[])
     bmpcolor **tcolortab;
 
     FILE *fBmpdatei = fopen("naegel.bmp","rb");
-    FILE *neu = fopen("naegelneu.bmp","wb"); // neue Datei erstellen
+    FILE *neu = fopen("naegelneu2.bmp","wb"); // neue Datei erstellen
 
     if(fBmpdatei == NULL) // Geöffnete Datei vorhanden?
     {
         printf("Keine Datei wurde geoeffnet.");
         return 0;
     }
-
-
+    einlesen(fBmpdatei,&bhead,&binfo);
+    /*
     fread(&bhead,sizeof(bmpheader),1,fBmpdatei); // Bitmapheader einlesen in die Struktur fBmpdatei
     fread(&binfo,sizeof(bmpinfo),1,fBmpdatei); // Bitmapinfoheader einlesen in die Struktur fBmpdatei
-
+    */
     tcolortab = (bmpcolor**)malloc(binfo.biHeight*sizeof(bmpcolor*)); // Speicher reservieren für die erste Dimension
     for(iL=0; iL<binfo.biHeight;iL++) // Speicher reservieren für die zweite Dimension
     {
