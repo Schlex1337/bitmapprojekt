@@ -4,10 +4,10 @@
 #pragma pack(2)
 typedef struct
 {
-    unsigned short bfType;
-    unsigned int bfSize;
-    unsigned int bfReserverd;
-    unsigned int bfOffBits;
+    unsigned short biType;
+    unsigned int biSize;
+    unsigned int biReserverd;
+    unsigned int biOffBits;
 }bmpheader;
 
 #pragma pack(2)
@@ -35,10 +35,10 @@ typedef struct // Farbtabelle
 
 void printheadinfo(bmpheader *bhead,bmpinfo *binfo) // Bitmapinfoheader auf die Konsole ausprinten
 {
-    printf("Type: %d \n", bhead->bfType);
-    printf("Size:%d \n", bhead->bfSize);
-    printf("Reserved:%d \n", bhead->bfReserverd);
-    printf("OffBits: %d \n", bhead->bfOffBits);
+    printf("Type: %d \n", bhead->biType);
+    printf("Size:%d \n", bhead->biSize);
+    printf("Reserved:%d \n", bhead->biReserverd);
+    printf("OffBits: %d \n", bhead->biOffBits);
     printf("\n");
     printf("Size: %d \n", binfo->biSize);
     printf("Width: %d \n", binfo->biWidth);
@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
     }
 
 
-    printheadinfo(&bhead,&binfo); //Bitmapheader auf der Konsole anzeigen lassen
+    printheadinfo(&bhead,&binfo); //Bitmapheader und Bitmapinfo auf der Konsole anzeigen lassen
 
     fclose(neu); // Neue Datei schlieﬂen
     fclose(fBmpdatei); // Alte Datei schlieﬂen
