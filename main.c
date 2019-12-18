@@ -65,8 +65,8 @@ int main(int argc, char *argv[])
     bmpinfo tbmpif;
     bmpcolor **tcolortab;
 
-    FILE *fBmpdatei = fopen("naegel.bmp","rb");
-    FILE *neu = fopen("nneu.bmp","wb"); // neue Datei erstellen
+    FILE *fBmpdatei = fopen("fueller.bmp","rb");
+    FILE *neu = fopen("fuellerneu2.bmp","wb"); // neue Datei erstellen
 
     if(fBmpdatei == NULL) // Geöffnete Datei vorhanden?
     {
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
             fwrite(&tcolortab[iX][iY],sizeof(bmpcolor),1,neu);
         }
 
-        if(4-tbmpif.biWidth%4 != 0)
+        if(tbmpif.biWidth%4 != 0)
         {
             for(iL=0; iL<4-tbmpif.biWidth%4; iL++)
             {
