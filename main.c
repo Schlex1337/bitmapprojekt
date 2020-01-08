@@ -65,16 +65,30 @@ void auslesen(FILE *neu,bmpheader *bhead,bmpinfo *binfo)
     fwrite(binfo,sizeof(bmpinfo),1,neu); // Bitmapinfoheader in die neue Datei reinschreiben
 }
 
+void greyscale(bmpcolor **tcolortab,int height, int width)
+{
+    int iP;
+    for(int iX=0; iX<height; iX++) // Graustufe
+    {
+       for(int iY=0; iY<width; iY++)
+        {
+            iP = tcolortab[iX][iY].cR*0.299+tcolortab[iX][iY].cG*0.587+tcolortab[iX][iY].cB*0.114;
+            tcolortab[iX][iY].cB = iP;
+            tcolortab[iX][iY].cG = iP;
+            tcolortab[iX][iY].cR = iP;
+        }
+    }
+}
 
 int main(int argc, char *argv[])
 {
-    int iX , iY, iL, iP, iH;
+    int iX , iY, iL;
     bmpheader bhead;
     bmpinfo binfo;
     bmpcolor **tcolortab;
 
-    FILE *fBmpdatei = fopen("naegel.bmp","rb");
-    FILE *neu = fopen("naegelneu3.bmp","wb"); // neue Datei erstellen
+    FILE *fBmpdatei = fopen(argv[1],"rb");
+    FILE *neu = fopen("fuellerneu.bmp","wb"); // neue Datei erstellen
 
     if(fBmpdatei == NULL) // Geöffnete Datei vorhanden?
     {
@@ -100,9 +114,9 @@ int main(int argc, char *argv[])
         }
         fseek(fBmpdatei,binfo.biWidth%4,SEEK_CUR);
     }
+    greyscale(tcolortab,binfo.biHeight,binfo.biWidth);
 
-
-
+/*
     for(iX=0; iX<binfo.biHeight; iX++) // Graustufe
     {
        for(iY=0; iY<binfo.biWidth; iY++)
@@ -113,7 +127,7 @@ int main(int argc, char *argv[])
             tcolortab[iX][iY].cR = iP;
         }
     }
-
+*/
     auslesen(neu,&bhead,&binfo);
 
     for(iX=0; iX<binfo.biHeight; iX++) // Farbtabelle in die neue Datei reinschreiben
