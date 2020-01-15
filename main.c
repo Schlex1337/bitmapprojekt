@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #pragma pack(2)
 typedef struct
@@ -82,74 +83,95 @@ void greyscale(bmpcolor **tcolortab,int height, int width)
 
 int main(int argc, char *argv[])
 {
-    int iX , iY, iL;
+    int iX , iY, iL, iLZ;
+
+    char neustring[] = "neu.bmp";
+    char fakestring[20];
+    char cseek[] = ".";
+
     bmpheader bhead;
     bmpinfo binfo;
     bmpcolor **tcolortab;
+    FILE *fBmpdatei;
+    FILE *neu;
 
-    FILE *fBmpdatei = fopen(argv[1],"rb");
-    FILE *neu = fopen("fuellerneu.bmp","wb"); // neue Datei erstellen
 
-    if(fBmpdatei == NULL) // Geöffnete Datei vorhanden?
+    for(iLZ=1; iLZ<=3; iLZ++)
     {
-        printf("Keine Datei wurde geoeffnet.");
-        return 0;
-    }
-    einlesen(fBmpdatei,&bhead,&binfo);
-
-    tcolortab = (bmpcolor**)malloc(binfo.biHeight*sizeof(bmpcolor*)); // Speicher reservieren für die erste Dimension
-
-    for(iL=0; iL<binfo.biHeight;iL++) // Speicher reservieren für die zweite Dimension
-    {
-        tcolortab[iL] = (bmpcolor*)malloc(binfo.biWidth*sizeof(bmpcolor));
-    }
 
 
+        printf("::::::::::::::::::::::::%d::::::::::::::::",iLZ);
+        fBmpdatei = fopen(argv[iLZ],"rb"); // Alte Datei öffnen
 
-    for(iX=0 ; iX<binfo.biHeight; iX++) // Farbtabelle einlesen
-    {
-        for(iY=0; iY<binfo.biWidth; iY++)
+        printf("%s \n",argv[iLZ]);
+        strcpy(fakestring,argv[iLZ]);
+        strtok(fakestring,cseek); // Zeichen suchen und ab dem Zeichen zerteilen
+        strcat(fakestring,neustring); // Zeichen ersetzen
+        printf("%s \n",fakestring);
+
+        neu = fopen(fakestring,"wb"); // neue Datei erstellen
+
+        if(fBmpdatei == NULL) // Geöffnete Datei vorhanden?
         {
-            fread(&tcolortab[iX][iY],sizeof(bmpcolor),1,fBmpdatei);
-        }
-        fseek(fBmpdatei,binfo.biWidth%4,SEEK_CUR);
-    }
-    greyscale(tcolortab,binfo.biHeight,binfo.biWidth);
-
-/*
-    for(iX=0; iX<binfo.biHeight; iX++) // Graustufe
-    {
-       for(iY=0; iY<binfo.biWidth; iY++)
-        {
-            iP = tcolortab[iX][iY].cR*0.299+tcolortab[iX][iY].cG*0.587+tcolortab[iX][iY].cB*0.114;
-            tcolortab[iX][iY].cB = iP;
-            tcolortab[iX][iY].cG = iP;
-            tcolortab[iX][iY].cR = iP;
-        }
-    }
-*/
-    auslesen(neu,&bhead,&binfo);
-
-    for(iX=0; iX<binfo.biHeight; iX++) // Farbtabelle in die neue Datei reinschreiben
-    {
-       for(iY=0; iY<binfo.biWidth; iY++)
-        {
-            fwrite(&tcolortab[iX][iY],sizeof(bmpcolor),1,neu);
+            printf("Keine Datei wurde geoeffnet.");
+            return 0;
         }
 
-        if(binfo.biWidth%4 != 0)
+        einlesen(fBmpdatei,&bhead,&binfo);
+
+        tcolortab = (bmpcolor**)malloc(binfo.biHeight*sizeof(bmpcolor*)); // Speicher reservieren für die erste Dimension
+
+        for(iL=0; iL<binfo.biHeight;iL++) // Speicher reservieren für die zweite Dimension
         {
-            for(iL=0; iL<4-binfo.biWidth%4; iL++)
+            tcolortab[iL] = (bmpcolor*)malloc(binfo.biWidth*sizeof(bmpcolor));
+        }
+
+        for(iX=0 ; iX<binfo.biHeight; iX++) // Farbtabelle einlesen
+        {
+            for(iY=0; iY<binfo.biWidth; iY++)
             {
-                fputc(0,neu);
+                fread(&tcolortab[iX][iY],sizeof(bmpcolor),1,fBmpdatei);
+            }
+            fseek(fBmpdatei,binfo.biWidth%4,SEEK_CUR);
+        }
+
+        greyscale(tcolortab,binfo.biHeight,binfo.biWidth);
+
+        auslesen(neu,&bhead,&binfo);
+        auslesen(neu,&bhead,&binfo);
+        auslesen(neu,&bhead,&binfo);
+
+        for(iX=0; iX<binfo.biHeight; iX++) // Farbtabelle in die neue Datei reinschreiben
+        {
+           for(iY=0; iY<binfo.biWidth; iY++)
+            {
+                fwrite(&tcolortab[iX][iY],sizeof(bmpcolor),1,neu);
+            }
+
+            if(binfo.biWidth%4 != 0)
+            {
+                for(iL=0; iL<4-binfo.biWidth%4; iL++)
+                {
+                    fputc(0,neu);
+                }
             }
         }
+
+        printheadinfo(&bhead,&binfo); //Bitmapheader und Bitmapinfo auf der Konsole anzeigen lassen
+
+        fclose(neu); // Neue Datei schließen
+        fclose(fBmpdatei); // Alte Datei schließen
+
+        printf("%s \n",argv[iLZ]);
+        printf("%s \n",fakestring);
+
+        free(tcolortab);
+        printf("---------------\n");
     }
 
+        printf("%s \n",argv[1]);
+        printf("%s \n",argv[2]);
+        printf("%s \n",argv[3]);
 
-    printheadinfo(&bhead,&binfo); //Bitmapheader und Bitmapinfo auf der Konsole anzeigen lassen
-
-    fclose(neu); // Neue Datei schließen
-    fclose(fBmpdatei); // Alte Datei schließen
     return 0;
 }
