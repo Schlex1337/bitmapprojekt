@@ -138,8 +138,6 @@ int main(int argc, char *argv[])
         greyscale(tcolortab,binfo.biHeight,binfo.biWidth);
 
         auslesen(neu,&bhead,&binfo);
-        auslesen(neu,&bhead,&binfo);
-        auslesen(neu,&bhead,&binfo);
 
         for(iX=0; iX<binfo.biHeight; iX++) // Farbtabelle in die neue Datei reinschreiben
         {
@@ -162,16 +160,8 @@ int main(int argc, char *argv[])
         fclose(neu); // Neue Datei schließen
         fclose(fBmpdatei); // Alte Datei schließen
 
-        printf("%s \n",argv[iLZ]);
-        printf("%s \n",fakestring);
-
         free(tcolortab);
         printf("---------------\n");
     }
-
-        printf("%s \n",argv[1]);
-        printf("%s \n",argv[2]);
-        printf("%s \n",argv[3]);
-
     return 0;
 }
