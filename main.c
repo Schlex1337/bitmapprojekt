@@ -81,6 +81,48 @@ void greyscale(bmpcolor **tcolortab,int height, int width)
     }
 }
 
+void tabelleneu(FILE *neu, int height, int width, bmpcolor **tcolortab)
+{
+    for(int iX=0; iX<height; iX++) // Farbtabelle in die neue Datei reinschreiben
+        {
+           for(int iY=0; iY<width; iY++)
+            {
+                fwrite(&tcolortab[iX][iY],sizeof(bmpcolor),1,neu);
+            }
+
+            if(width%4 != 0)
+            {
+                for(int iL=0; iL<4-width%4; iL++)
+                {
+                    fputc(0,neu);
+                }
+            }
+        }
+}
+void tabellealt(FILE *neu, int height, int width, bmpcolor **tcolortab, FILE *fBmpdatei)
+{
+     for(int iX=0 ; iX<height; iX++) // Farbtabelle einlesen
+        {
+            for(int iY=0; iY<width; iY++)
+            {
+                fread(&tcolortab[iX][iY],sizeof(bmpcolor),1,fBmpdatei);
+            }
+            fseek(fBmpdatei,width%4,SEEK_CUR);
+        }
+}
+
+/*
+void speicher(int height, int width, bmpcolor ***tcolortab)
+{
+
+    tcolortab = (bmpcolor**)malloc(height*sizeof(bmpcolor*)); // Speicher reservieren für die erste Dimension
+    for(int iL=0; iL<height;iL++) // Speicher reservieren für die zweite Dimension
+    {
+        tcolortab[iL] = (bmpcolor*)malloc(width*sizeof(bmpcolor));
+    }
+}*/
+
+
 int main(int argc, char *argv[])
 {
     int iX , iY, iL, iLZ;
@@ -126,34 +168,16 @@ int main(int argc, char *argv[])
             tcolortab[iL] = (bmpcolor*)malloc(binfo.biWidth*sizeof(bmpcolor));
         }
 
-        for(iX=0 ; iX<binfo.biHeight; iX++) // Farbtabelle einlesen
-        {
-            for(iY=0; iY<binfo.biWidth; iY++)
-            {
-                fread(&tcolortab[iX][iY],sizeof(bmpcolor),1,fBmpdatei);
-            }
-            fseek(fBmpdatei,binfo.biWidth%4,SEEK_CUR);
-        }
+        //speicher(binfo.biHeight,binfo.biWidth,tcolortab);
+
+        tabellealt(neu,binfo.biHeight, binfo.biWidth, tcolortab, fBmpdatei);
 
         greyscale(tcolortab,binfo.biHeight,binfo.biWidth);
 
         auslesen(neu,&bhead,&binfo);
 
-        for(iX=0; iX<binfo.biHeight; iX++) // Farbtabelle in die neue Datei reinschreiben
-        {
-           for(iY=0; iY<binfo.biWidth; iY++)
-            {
-                fwrite(&tcolortab[iX][iY],sizeof(bmpcolor),1,neu);
-            }
+        tabelleneu(neu,binfo.biHeight, binfo.biWidth, tcolortab);
 
-            if(binfo.biWidth%4 != 0)
-            {
-                for(iL=0; iL<4-binfo.biWidth%4; iL++)
-                {
-                    fputc(0,neu);
-                }
-            }
-        }
 
         printheadinfo(&bhead,&binfo); //Bitmapheader und Bitmapinfo auf der Konsole anzeigen lassen
 
